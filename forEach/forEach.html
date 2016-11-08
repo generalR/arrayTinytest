@@ -1,0 +1,50 @@
+<script src="../tinytest.js"></script>
+<script>
+
+function forEach(array, callback, configurableThisObject) {
+  forEachCallback = callback;
+
+  if(configurableThisObject){
+    //want to Bind configurableThisObject to the callback function
+    forEachCallback = callback.bind(configurableThisObject);
+  }
+  for(var i = 0; i < array.length ; i++){
+    forEachCallback(array[i], i, array);
+  }
+}
+
+//--------------------------------
+
+tests({
+  'It should run the callback function array.length times': function() {
+    var counter = 0;
+    forEach([1,2,3], function(){
+      counter++;
+    });
+    eq(counter, 3);
+  },
+  'It should pass in each element as the first argument to the callback': function() {
+    forEach([1], function(number){
+      eq(1, number );
+    });
+  },
+  'It should pass in the ith position as the second argument to the callback': function(){
+    forEach([1], function(number, index){
+      eq(index, 0);
+     });
+   },
+   'It should pass in the original array as the third argument to the callback': function(){
+     var testArray = [1,2,3];
+     forEach(testArray, function(number, index, originalArray){
+       eq(originalArray, testArray);
+      });
+   },
+   'It should accept a configurable this object ': function(){
+      forEach([1], function(){
+        //Inside of here , this should be equal to configurableThisObject.
+        //this.description should be equal to 'configurable this object'.
+        eq(this.description,'I am a configurable this object');
+      }, {description : "I am a configurable this object"});
+   }
+});
+</script>
