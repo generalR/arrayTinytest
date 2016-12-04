@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+</head>
+<body>
+<h1>My First Heading</h1>
+<p>My first paragraph.</p>
+
+
+<script src="../tinytest.js"></script>
+<script>
+//Example 1: Callback should run 3 times
+//map[1,2,3], function() {} );
+
+//Example 2: Callback has access to ith element
+//map[1,2,3], function(element) {} );
+
+//Example 3: Callback has access to index element
+//map[1,2,3], function(element, index) {
+  //console.log(index);
+//});
+
+//Example 4:  Callback has access to originalArray
+//map[1,2,3], function(element, index, originalArray) {
+//console.log(originalArray);
+//});
+
+//Example 5: Optional this
+//map([1,2,3], function(){
+//console.log(this.name);
+//}, {name:'Roy'});
+
+//Example 6:
+//originalArray = [1,2,3];
+//var filteredArray = map(testArray, function(){});
+//  originalArray !== filteredArray;
+
+
+//Example 7:
+//originalArray = [1,2,3];
+//var mappedArray = map(originalArray, function(element){
+//  return element * 2;
+//});
+//Expect mapped array to be [2, 4, 6]
+
+/*-------------- MAP ------------------*/
+
+/*function filter(originalArray, callback, optionalThis){
+
+  filteredCallback = callback;
+    if(optionalThis){
+      filteredCallback = callback.bind(optionalThis);
+    }
+  var filteredArray = [];
+
+  for(var i = 0; i < originalArray.length; i++){
+     if(filteredCallback(originalArray[i], i, originalArray) ){
+       filteredArray.push(originalArray[i]);
+     }
+  }
+  return filteredArray;
+
+};*/
+
+function map(originalArray, callback, optionalThis){
+  var mappCallback = callback;
+  var mappedArray = [];
+
+  if(optionalThis){
+    mappCallback = callback.bind(optionalThis);
+  }
+  for(var i = 0; i < originalArray.length; i++){
+    if(i in originalArray){
+      //mappedArray.push(mappCallback(originalArray[i], i, originalArray) );
+      mappedArray[i] = mappCallback(originalArray[i], i, originalArray);
+    }
+  }
+  return mappedArray;
+};
+
+/*--------------- TEST -----------------*/
+
+tests({
+  'It should run the callback function array.length times': function() {
+    var counter = 0;
+    map([1,2,3], function(){
+      counter++;
+    });
+    eq(counter, 3);
+  },
+  'It should pass in each element as the first argument to the callback': function() {
+      map([1], function(number){
+      eq(1, number );
+    });
+  },
+  'It should pass in the ith position as the second argument to the callback': function(){
+    map([1], function(number, index){
+      eq(index, 0);
+     });
+   },
+   'It should pass in the original array as the third argument to the callback': function(){
+      testArray = [1, 2, 3];
+        map(testArray, function(number, index, originalArray){
+          eq(originalArray, testArray);
+      });
+   },
+   'It should accept a optional this object.': function(){
+        map([1], function(){
+        //Inside of here , this should be equal to configurableThisObject.
+        //this.description should be equal to 'configurable this object'.
+        eq(this.description,'I am a configurable this object');
+      }, {description : "I am a configurable this object"});
+   },
+   'It should return a new array': function() {
+     var mappedArray = map([], function() {});
+     //check if filteredArray is actually an Array
+     eq(Array.isArray(mappedArray), true);
+   },
+   'It should return a new array, not the original array': function(){
+      var originalArray = [];
+      var mappedArray = map(originalArray, function() {});
+      //filteredArray !== testArray;
+      eq(mappedArray !== originalArray, true);
+   },
+   'It should return a mapped array': function(){
+    var mappedArray = map([1], function(number){
+      return number * 4;
+    });
+    eq(mappedArray[0], 4);
+  },
+    'It should skip unassigned idexex': function(){
+       var wierdArray = [, 1];
+       mappedArray = map(wierdArray, function double(number) {
+         return number * 2;
+       });
+       // property in object
+       //(0 in mappedArray) === false
+       //mappedArray[1] === 2
+       console.log(mappedArray);
+       eq(0 in mappedArray, false);
+       eq(mappedArray[1], 2);
+      }
+});
+</script>
+</body>
+</html>

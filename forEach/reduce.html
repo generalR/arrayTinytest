@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+</head>
+<body>
+
+
+
+<script src="../tinytest.js"></script>
+<script>
+/* Prototype implementation
+((startningValue bestäms av den som andropar funktionen
+
+function reduce(array, callback, startningValue){
+  var resultSoFar = startningValue;
+  for(var i = 0; i<array.length; i++){
+    resultSoFar = callback(resultSoFar, array[i], i, array);
+  }
+  return resultSoFar;
+}
+
+*/
+
+//callback parameters:
+//previousValue -- vi vill att previousValue ska vara === initialValue
+//currentValue
+//currentIndex
+//array
+
+//return value:
+//Returns a single value
+
+//If no initialValue, and array has one element, it should return that element without calling callback
+function reduce(array, callback, initialValue){
+  var startingIndex = 0;
+  //if initailValue is passed in sätt den till resultSoFar
+  var resultSoFar = initialValue;
+
+  //If no initialvalue
+  if(arguments.length < 3){
+    resultSoFar = array[startingIndex];
+    startingIndex++;
+
+  //If array has one element, just return it
+  if(Object.keys(array).length === 1 ){
+    var singleIndex = Object.keys(array)[0];
+    return singleElement = array[singleIndex];
+    return singleElement;
+  }
+
+  //Has initialValue
+  }else{
+      if(Object.keys(array).length === 0 ){
+        return initialValue;
+      }
+    }
+
+  for(var i = startingIndex; i < array.length; i++){
+      callback(/*previousValue*/resultSoFar, /*currentValue*/array[i], i);
+  }
+}
+
+tests({
+  'If initialValue, callback should run array.length times': function() {
+    var numberOfTimesCallbackHasRun = 0;
+    reduce([1], function(){
+      numberOfTimesCallbackHasRun++;
+    }, 0);
+    eq(numberOfTimesCallbackHasRun, 1);
+  },
+  'If no initialValue, callback should run array.length -1 times': function() {
+    var numberOfTimesCallbackHasRun = 0;
+    reduce([1], function(){
+      numberOfTimesCallbackHasRun++;
+    });
+    eq(numberOfTimesCallbackHasRun, 0);
+  },
+  'If initialValue, previousValue should start with initailValue': function() {
+     reduce([1], function(previousValue) {
+      eq(previousValue, 0);
+    }, 0 /* = initialValue*/);
+  },
+  'If initialValue, currentValue should start with array[0]': function() {
+    reduce([1], function(previousValue, currentValue) {
+     eq(currentValue, 1);
+   }, 0 /* = initialValue*/);
+  },
+  'If initialValue, callback will start at index 0': function() {
+    reduce([1], function(previousValue, currentValue, currentIndex) {
+     eq(currentIndex, 0);
+   }, 0 /* = initialValue*/);
+  },
+  'If no initialValue, previousValue should start with array[0]': function(){
+    reduce([1, 2], function(previousValue) {
+     eq(previousValue, 1);
+   });
+  },
+  'If no initialValue, currentValue should start with array[1]': function(){
+    reduce([1, 2], function(previousValue, currentValue) {
+     eq(currentValue, 2);
+   });
+  },
+  'If no initialValue, callback will start at index 1': function(){
+    reduce([1, 2], function(previousValue, currentValue, currentIndex) {
+     eq(currentIndex, 1);
+   });
+  },
+  'If initialValue, and array is empty, return initialValue without calling callback': function(){
+    var numberOfTimesCallbackHasRun = 0;
+    var reduceResult = reduce([], function() {
+      numberOfTimesCallbackHasRun++;
+    }, 0);
+    eq(reduceResult, 0);
+    eq(numberOfTimesCallbackHasRun, 0);
+  },
+  'If no initialValue, and array has one element, it should return that element without calling callback': function(){
+    var numberOfTimesCallbackHasRun = 0;
+    var reduceResult = reduce([1], function() {
+      numberOfTimesCallbackHasRun++;
+    });
+      eq(reduceResult, 1);
+      eq(numberOfTimesCallbackHasRun, 0);
+  },
+
+
+
+
+
+
+
+
+  'It should actually reduce': function(){
+    fail();
+  },
+  'It should exclude holes': function(){
+    fail();
+  },
+  'If array is empty and no initialValue, throw TypeError': function(){
+    fail();
+  },
+  'It should pass array as forth argument to callback': function(){
+    fail();
+  }
+});
+</script>
+</body>
+</html>
