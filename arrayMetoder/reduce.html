@@ -19,8 +19,14 @@ function reduce(array, callback, startningValue){
   }
   return resultSoFar;
 }
-
 */
+
+//"allt är ett objekt i javascipt" JS behandlar arrayen som ett object
+/* object.keys([1, 2, 3]) */
+/* object.keys([,,,,]).length */ /*array with holes*/
+
+/* object.keys([]).length */ /*empty array*/
+
 
 //callback parameters:
 //previousValue -- vi vill att previousValue ska vara === initialValue
@@ -36,18 +42,28 @@ function reduce(array, callback, initialValue){
   var startingIndex = 0;
   //if initailValue is passed in sätt den till resultSoFar
   var resultSoFar = initialValue;
+  var length = array.length;
 
   //If no initialvalue
   if(arguments.length < 3){
+  //Array is empty, throw TypeError
+  if(Object.keys(array).length === 0){
+    throw new TypeError('Reduce of empty array with no initial value');
+  }
+
+    //If array has one element, just return it
+    if(Object.keys(array).length === 1 ){
+      var onlyIndex = Object.keys(array)[0];
+      var onlyElement = array[onlyIndex];
+      return onlyElement;
+    }
+  //we want to skip holes at the beginning of the array
+  while(startingIndex in array === false && startingIndex < length){
+    startingIndex++;
+  }
+
     resultSoFar = array[startingIndex];
     startingIndex++;
-
-  //If array has one element, just return it
-  if(Object.keys(array).length === 1 ){
-    var singleIndex = Object.keys(array)[0];
-    return singleElement = array[singleIndex];
-    return singleElement;
-  }
 
   //Has initialValue
   }else{
@@ -57,8 +73,11 @@ function reduce(array, callback, initialValue){
     }
 
   for(var i = startingIndex; i < array.length; i++){
-      callback(/*previousValue*/resultSoFar, /*currentValue*/array[i], i);
+    if(i in array){
+      var resultSoFar = callback(/*previousValue*/resultSoFar, /*currentValue*/array[i], i);
+    }
   }
+  return resultSoFar;
 }
 
 tests({
@@ -122,22 +141,38 @@ tests({
       eq(reduceResult, 1);
       eq(numberOfTimesCallbackHasRun, 0);
   },
-
-
-
-
-
-
-
-
   'It should actually reduce': function(){
-    fail();
+    var sum = reduce([1, 2, 3], function(a, b){
+      return a + b;
+    }, 0);
+    eq(sum, 6);
   },
   'It should exclude holes': function(){
-    fail();
+    var sum = reduce([ ,1 , , 2, , 3, ], function(a, b){
+      return a + b;
+    }, 0);
+    eq(sum, 6);
   },
+  'If no initailValue, It should exclude holes': function(){
+      var sum = reduce([ ,1 , , 2, , 3, ], function(a, b){
+      return a + b;
+    });
+    eq(sum, 6);
+  },
+
+
+
+
   'If array is empty and no initialValue, throw TypeError': function(){
-    fail();
+    var isTypeError = false;
+    try{
+      reduce([], (function() {}));
+    }catch(e){
+       isTypeError = (e instanceof TypeError);
+       console.log(isTypeError);
+    }
+    console.log(isTypeError);
+    eq(isTypeError, true);
   },
   'It should pass array as forth argument to callback': function(){
     fail();
